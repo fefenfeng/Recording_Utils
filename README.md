@@ -39,7 +39,7 @@
 - **功能:**  计算麦克风低频灵敏度差异 (**测试方式：**麦克悬挂在一个平面，远场(>1.5m)音响播放噪声)
 - **使用：** `python compute_mic_sensitivity.py`
   - 默认使用同目录下的`config.cfg`, 参数详情见注释
-- **输出：**输出文件格式为`json`, 包含`session_level`, `distance_level`,`global_level`的mic通道对于参考mic通道的相对灵敏度差异
+- **输出：** 输出文件格式为`json`, 包含`session_level`, `distance_level`,`global_level`的mic通道对于参考mic通道的相对灵敏度差异
 - ⚠ 仅适用于三层目录结构`root/distance/session/*.wav`
 
 #### calibrate_mic_sensitivity
