@@ -1,0 +1,5 @@
+soundfile~=0.12.1
+pandas~=2.2.2
+tqdm~=4.66.5
+librosa~=0.10.2.post1
+numpy~=1.26.0
