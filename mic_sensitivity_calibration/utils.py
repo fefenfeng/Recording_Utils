@@ -14,19 +14,25 @@ import soundfile as sf
 import numpy as np
 
 
-def read_wav(filepath: str, target_rate: int = 48000) -> tuple[int, np.ndarray] | tuple[None, None]:
+def read_wav(filepath: str, target_rate: int = 48000) -> tuple[int, np.ndarray, str] | tuple[None, None, None]:
     """
-    读取wav单通道文件并重采样到目标采样率(使用librosa库)
+    读取wav单通道文件并重采样到目标采样率,同时获取原始音频格式
     :param filepath: wav文件路径
     :param target_rate: 目标采样率
-    :return: 采样率和数据，遇异常为空
+    :return: (采样率, 数据, 原始subtype),遇异常返回(None, None, None)
     """
     try:
+        # 获取原始文件的subtype信息
+        info = sf.info(filepath)
+        original_subtype = info.subtype
+
+        # 使用librosa读取并重采样
         data, sample_rate = librosa.load(filepath, sr=target_rate, mono=True)
-        return sample_rate, data
+
+        return sample_rate, data, original_subtype
     except Exception as e:
         print(f"Error reading {filepath}: {e}")
-        return None, None
+        return None, None, None
 
 
 def get_avg_amp_spec(data: np.ndarray, sample_rate: int, start_time: float, end_time: float,
@@ -201,15 +207,16 @@ def apply_gain_to_audio(data: np.ndarray, gain: float) -> np.ndarray:
     return data * gain
 
 
-def save_wav(filepath: str, sr: int, data: np.ndarray):
+def save_wav(filepath: str, sr: int, data: np.ndarray, subtype: str = 'float32'):
     """
-    保存wav文件
+    保存wav文件,保持与原始文件相同的格式
     :param filepath: 保存路径
     :param sr: 采样率
     :param data: 音频数据
+    :param subtype: 音频格式(如'float32', 'float64', 'int16'等)
     """
     try:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        sf.write(filepath, data, sr)
+        sf.write(filepath, data, sr, subtype=subtype)
     except Exception as e:
         print(f"Error saving {filepath}: {e}")

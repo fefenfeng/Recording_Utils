@@ -63,7 +63,7 @@ def compute_amplitudes(file_structure: dict, cfg: dict) -> dict:
 
             for mic_prefix, filepath in mics.items():
                 # 读取音频
-                sr, data = read_wav(filepath, cfg['target_sample_rate'])
+                sr, data, _ = read_wav(filepath, cfg['target_sample_rate'])
                 if data is None:
                     continue
 

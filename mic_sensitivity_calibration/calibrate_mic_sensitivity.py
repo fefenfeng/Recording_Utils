@@ -183,8 +183,8 @@ def process_files(cfg: dict, gain_factors: dict, file_classification: dict,
             src_path = os.path.join(source_dir, rel_path)
             dst_path = os.path.join(target_dir, rel_path)
 
-            # 读取音频
-            sr, data = read_wav(src_path, target_rate=48000)
+            # 读取音频(包含原始格式信息)
+            sr, data, subtype = read_wav(src_path, target_rate=48000)
             if data is None:
                 print(f"    Warning: Failed to read {rel_path}")
                 continue
@@ -192,8 +192,8 @@ def process_files(cfg: dict, gain_factors: dict, file_classification: dict,
             # 应用增益
             calibrated_data = apply_gain_to_audio(data, gain)
 
-            # 保存
-            save_wav(dst_path, sr, calibrated_data)
+            # 保存(使用原始格式)
+            save_wav(dst_path, sr, calibrated_data, subtype=subtype)
             stats['calibrated'][target_prefix] += 1
 
     # 3. 处理其他文件(直接复制)
