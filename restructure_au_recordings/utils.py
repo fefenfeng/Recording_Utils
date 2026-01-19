@@ -67,10 +67,17 @@ def parse_mapping_xlsx(mapping_file: Path) -> List[Tuple[str, List[str]]]:
     return mapping
 
 
-def validate_mapping(mapping: List[Tuple[str, List[str]]]) -> None:
+def validate_mapping(
+        mapping: List[Tuple[str, List[str]]],
+        index: Dict[Tuple[str, str], Path],
+        prefixes: List[str]
+) -> None:
     """
     验证 mapping 的合理性，打印没有后缀编号的 participant 以及重复的 participant
+    同时检查每个 session 是否包含所有 prefix
     :param mapping: participant 与后缀列表映射关系
+    :param index: (前,后缀)-路径索引字典
+    :param prefixes: 需要检查的 prefix 列表
     :return: None
     """
     empty_people = [p for p, suffixes in mapping if not suffixes]
@@ -80,6 +87,30 @@ def validate_mapping(mapping: List[Tuple[str, List[str]]]) -> None:
     p_counts = Counter(p for p, _ in mapping)
     duplicates = [p for p, count in p_counts.items() if count > 1]
     print(f"重复的 participant: {duplicates}")
+
+    # 检查每个 session 的 prefix 完整性
+    incomplete_sessions = []
+    for person, suffix_list in mapping:
+        for session_id, suffix in enumerate(suffix_list, start=1):
+            missing_prefixes = []
+            for prefix in prefixes:
+                if (prefix, suffix) not in index:
+                    missing_prefixes.append(prefix)
+
+            if missing_prefixes:
+                incomplete_sessions.append({
+                    'person': person,
+                    'session': session_id,
+                    'suffix': suffix,
+                    'missing': missing_prefixes
+                })
+
+    print(f"\nprefix 不完整的 session 数量: {len(incomplete_sessions)}")
+    if incomplete_sessions:
+        print("\n缺失 prefix 详情:")
+        for item in incomplete_sessions:
+            print(f"  {item['person']}/session_{item['session']} (后缀: {item['suffix']}) "
+                  f"缺少: {', '.join(item['missing'])}")
 
 
 def organize_files(

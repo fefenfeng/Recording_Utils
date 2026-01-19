@@ -93,7 +93,7 @@ def main():
     index = build_file_index(config['data_dir'], config['prefixes'])
     mapping = parse_mapping_xlsx(config['mapping_xlsx'])
 
-    validate_mapping(mapping)
+    validate_mapping(mapping, index, config['prefixes'])
     organize_files_flat(index, mapping, config['prefixes'], config['root_dir'])
 
     print("🎉 文件整理完成！")
